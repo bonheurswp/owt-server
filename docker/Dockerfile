@@ -32,7 +32,7 @@ RUN git clone https://github.com/open-webrtc-toolkit/owt-server.git
 WORKDIR /owt-server
 
 # This is needed to patch licode
-RUN  git config --global user.email "you@example.com" && \
-  git config --global user.name "Your Name"
+RUN  git config --global user.email "bonheurswp@gmail.com" && \
+  git config --global user.name "bonheurswp"
 
 RUN ./scripts/installDepsUnattended.sh
