@@ -10,7 +10,8 @@
     "ajv": "^5.2.2",
     "body-parser": "*",
     "mongoose": "^4.13.6",
-    "fraction.js": "^4.0.12"
+    "fraction.js": "^4.0.12",
+    "bcryptjs": "^2.4.3"
   },
   "engine": {
     "node": "8.15.0"

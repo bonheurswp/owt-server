@@ -1269,6 +1269,204 @@ class RoomApp extends React.Component {
   }
 }
 
+class UserApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      updates: [],
+      pages: null,
+      loading: true,
+      pageSize: 10
+    };
+    this.modalId = this.props.modalId || 'UserModal';
+    this.userCount = this.props.count;
+    this.fetchData = this.fetchData.bind(this);
+    this.renderEditable = this.renderEditable.bind(this);
+    this.renderOperation = this.renderOperation.bind(this);
+    this.handleUserUpdate = this.handleUserUpdate.bind(this);
+  }
+
+  handleUserUpdate(index, update) {
+    const data = [...this.state.data];
+    data[index] = Object.assign(data[index], update);
+    this.setState({ data });
+  }
+
+  fetchData(state, instance) {
+    this.setState({ loading: true });
+    restApi.getUsers(state.page, state.pageSize, (err, resp) => {
+      if (err) {
+        return notify('error', 'Failed to get users', err);
+      }
+      let ret = JSON.parse(resp);
+      this.pagination = state;
+      this.setState({
+        data: ret,
+        pageSize: state.pageSize,
+        pages: Math.ceil(ret.length / state.pageSize),
+        loading: false
+      });
+    });
+  }
+
+  renderEditable(cellInfo) {
+    return e(
+      'div',
+      {
+        style: { backgroundColor: '#fafafa' },
+        contentEditable: true,
+        suppressContentEditableWarning: true,
+        onBlur: e => {
+          const data = [...this.state.data];
+          const originColumn = data[cellInfo.index][cellInfo.column.id];
+          if (typeof originColumn === 'number') {
+            data[cellInfo.index][cellInfo.column.id] = parseInt(e.target.innerHTML);
+          }
+          if (typeof originColumn === 'string') {
+            data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+          }
+          this.setState({ data });
+        },
+        dangerouslySetInnerHTML: {
+          __html: this.state.data[cellInfo.index][cellInfo.column.id]
+        }
+      }
+    );
+  }
+
+  renderOperation(cellInfo) {
+    const opUser = this.state.data[cellInfo.index];
+    return e(
+      'div',
+      {style: {textAlign: 'center'}},
+      e(
+        'button',
+        {
+          className: 'btn btn-sm btn-primary',
+          style: { marginRight: '5px' },
+          'data-toggle': 'modal',
+          'data-target': '#' + this.modalId,
+          onClick: ()=>{
+            const domModal = document.querySelector('#' + this.modalId);
+            ReactDOM.unmountComponentAtNode(domModal);
+            ReactDOM.render(
+              e(
+                RoomModal,
+                {
+                  data: opUser,
+                  index: cellInfo.index,
+                  onUserUpdate: this.handleUserUpdate
+                }
+              ),
+              domModal
+            );
+          }
+        },
+        'Detail'
+      ),
+      e(
+        'button',
+        {
+          className: 'btn btn-sm btn-success',
+          style: { marginRight: '5px' },
+          onClick: ()=>{
+            restApi.updateUSer(opUser._id, opUser, (err, resp) => {
+              if (err) {
+                return notify('error', 'Update Room', resp);
+              }
+              notify('info', 'Update Room Success', opUser._id);
+              this.fetchData(this.pagination);
+            });
+          }
+        },
+        'Add'
+      ),
+      e(
+        'button',
+        {
+          className: 'btn btn-sm btn-warning',
+          onClick: ()=>{
+            notifyConfirm('Delete', 'Are you sure want to delete user ' + opUser._id, ()=>{
+              restApi.deleteUser(opUser._id, (err, resp) => {
+                if (err) {
+                  return notify('error', 'Delete User', resp);
+                }
+                this.fetchData(this.pagination);
+              });
+            });
+          }
+        },
+        'Remove'
+      )
+    );
+  }
+
+  render() {
+    const { data, pages, loading } = this.state;
+    const columns = [
+      {
+        Header: 'ID',
+        accessor: '_id'
+      },
+      {
+        Header: 'User Name',
+        accessor: 'userName',
+        Cell: this.renderEditable
+      },
+      {
+        Header: 'Real Name',
+        accessor: 'realName',
+        Cell: this.renderEditable
+      },
+      {
+        Header: 'Avatar',
+        accessor: 'userAvatar',
+        Cell: this.renderEditable
+      },
+      {
+        Header: 'Level',
+        accessor: 'userLevel',
+        Cell: this.renderEditable
+      },
+      {
+        Header: 'Logged In',
+        accessor: 'loggedin',
+        Cell: this.renderEditable
+      },
+      {
+        Header: 'Status',
+        accessor: 'userStatus',
+        Cell: this.renderEditable
+      },
+      {
+        Header: '',
+        Cell: this.renderOperation
+      }
+    ];
+
+    const manual = true;
+    const onFetchData = this.fetchData;
+
+    return e('div', {},
+      e('h1', {className: 'page-header'}, 'Users in current Service'),
+      e(
+        ReactTable,
+        {
+          data,
+          pages,
+          loading,
+          columns,
+          manual: true,
+          sortable: false,
+          onFetchData: this.fetchData,
+          defaultPageSize: 20
+        }
+      )
+    );
+  }
+}
+
 const domContainer = document.querySelector('#mainApp');
 
 function renderRoom() {
@@ -1279,6 +1477,11 @@ function renderRoom() {
 function renderService() {
   ReactDOM.unmountComponentAtNode(domContainer);
   ReactDOM.render(e(ServiceApp, {count: roomTotal || 1, modalId: 'mainModal'}), domContainer);
+}
+
+function renderUser() {
+  ReactDOM.unmountComponentAtNode(domContainer);
+  ReactDOM.render(e(UserApp, {count: roomTotal || 1, modalId: 'mainModal'}), domContainer);
 }
 
 login.then(()=> {

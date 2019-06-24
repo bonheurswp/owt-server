@@ -8,6 +8,7 @@ third_party/nICEr
 third_party/re
 third_party/webrtc
 third_party/SVT-HEVC
+third_party/quic-lib
 node_modules/
 *.o
 *.d

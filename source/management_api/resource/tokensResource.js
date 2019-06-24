@@ -64,6 +64,7 @@ var getTokenString = function (id, token) {
  * {tokenId: id, host: erizoController host, signature: signature of the token};
  */
 var generateToken = function (currentRoom, authData, origin, callback) {
+    log.debug('Begin to generate token');
     var currentService = authData.service,
         user = authData.user,
         role = authData.role,
@@ -95,6 +96,7 @@ var generateToken = function (currentRoom, authData, origin, callback) {
     token.secure = false;
 
     requestHandler.schedulePortal (token.code, origin, function (ec) {
+        log.debug('scheduled Poral successfully');
         if (ec === 'timeout') {
             callback('error');
             return;
@@ -112,6 +114,7 @@ var generateToken = function (currentRoom, authData, origin, callback) {
         dataAccess.token.create(token, function(id) {
             getTokenString(id, token)
                 .then((tokenS) => {
+                    log.debug('token created successfully' + tokenS);
                     callback(tokenS);
                 });
         });

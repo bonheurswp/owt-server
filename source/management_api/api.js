@@ -59,6 +59,8 @@ var streamingOutsResource = require('./resource/streamingOutsResource');
 var recordingsResource = require('./resource/recordingsResource');
 var sipcallsResource = require('./resource/sipcallsResource');
 var analyticsResource = require('./resource/analyticsResource');
+var usersResource = require('./resource/usersResource');
+var userResource = require('./resource/userResource');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -77,7 +79,7 @@ app.options('*', function(req, res) {
 });
 
 // Only following paths need authentication.
-var authPaths = ['/rooms*', '/v1/rooms*', '/services*', '/cluster*'];
+var authPaths = ['/rooms*', '/v1/rooms*', '/services*', '/cluster*', '/users*'];
 app.get(authPaths, serverAuthenticator.authenticate);
 app.post(authPaths, serverAuthenticator.authenticate);
 app.delete(authPaths, serverAuthenticator.authenticate);
@@ -148,6 +150,15 @@ app.post('/v1/rooms/:room/tokens', tokensResource.create);
 ////////////////////////////////////////////////////////////////////////////////////////////
 // v1 interface end
 // /////////////////////////////////////////////////////////////////////////////////////////
+
+//User management
+app.post('/users', usersResource.createUser);
+app.get('/users', usersResource.represent);
+app.get('/users/:user', userResource.represent);
+app.delete('/users/:user', userResource.deleteUser);
+app.put('/v1/users/:user', userResource.updateUser);
+app.post('/users/login', userResource.login);
+app.delete('/users/logout/:user', userResource.logout);
 
 // for path not match
 app.use('*', function(req, res, next) {

@@ -34,11 +34,11 @@ function prepareDB(next) {
       } else {
         log.error('Failed to get mongodb auth:', err);
       }
-      db = require('mongojs')(dbURL, ['services', 'infos', 'rooms']);
+      db = require('mongojs')(dbURL, ['services', 'infos', 'rooms', 'users']);
       next();
     });
   } else {
-    db = require('mongojs')(dbURL, ['services', 'infos', 'rooms']);
+    db = require('mongojs')(dbURL, ['services', 'infos', 'rooms', 'users']);
     next();
   }
 }

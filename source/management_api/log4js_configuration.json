@@ -19,7 +19,7 @@
     "RoomResource": "INFO",
     "UsersResource": "INFO",
     "UserResource": "INFO",
-    "TokensResource": "INFO",
+    "TokensResource": "DEBUG",
     "ServerAuthenticator": "INFO",
     "RequestHandler": "INFO",
     "RPCPublic": "INFO",

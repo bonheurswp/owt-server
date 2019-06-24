@@ -10,6 +10,7 @@ var metadata;
 var ENUMERATE = {
   SERVICE: "service",
   ROOM: "room",
+  USER: "user",
   RUNTIME: "runtime"
 };
 var serviceId = "";
@@ -100,6 +101,10 @@ function a_click(nowList, dom) {
     case ENUMERATE.ROOM:
       title.text("Rooms in current Service");
       checkProfile(renderRoom);
+      break;
+    case ENUMERATE.USER:
+      title.text("Users");
+      checkProfile(renderUser);
       break;
     case ENUMERATE.RUNTIME:
       title.text("MCU runtime");

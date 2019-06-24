@@ -6,7 +6,8 @@
     "log4js": "^1.1.1",
     "toml": "*",
     "mongoose": "^4.13.6",
-    "fraction.js": "*"
+    "fraction.js": "*",
+    "bcryptjs": "^2.4.3"
   },
   "bin": "sip_portal.js",
   "pkg": {
