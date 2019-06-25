@@ -156,7 +156,7 @@ app.post('/users', usersResource.createUser);
 app.get('/users', usersResource.represent);
 app.get('/users/:user', userResource.represent);
 app.delete('/users/:user', userResource.deleteUser);
-app.put('/v1/users/:user', userResource.updateUser);
+app.put('/users/:user', userResource.updateUser);
 app.post('/users/login', userResource.login);
 app.delete('/users/logout/:user', userResource.logout);
 

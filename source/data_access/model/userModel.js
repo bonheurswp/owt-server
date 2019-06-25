@@ -16,7 +16,7 @@ var UserSchema = new Schema({
     enum : [1,2,3,4], // 1-teacher, 2-room owner, 3-admin, 4-member
     default: 4
   },
-  rooms: [{ type: Schema.Types.ObjectId, ref: 'Room' }],
+  rooms: [], //[{ type: Schema.Types.ObjectId, ref: 'Room' }],
   loggedin: { type: Boolean, default: false },
   userStatus: {
     type: Number,

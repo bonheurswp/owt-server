@@ -42,13 +42,7 @@ exports.createUser = function (req, res, next) {
     if (typeof req.body !== 'object' || req.body === null ) {
         return next(new e.BadRequestError('Invalid request body'));
     }
-
-    if (req.body.options && typeof req.body.options !== 'object') {
-        return next(new e.BadRequestError('Invalid user option'));
-    }
-    req.body.options = req.body.options || {};
-
-    var options = req.body.options;
+    var options = req.body || {};
     dataAccess.user.create(options, function(err, result) {
         if (!err && result) {
             log.debug('User created:', result);

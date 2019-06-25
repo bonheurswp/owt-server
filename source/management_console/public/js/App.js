@@ -1269,6 +1269,220 @@ class RoomApp extends React.Component {
   }
 }
 
+class UserModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: _.cloneDeep(props.data)
+    };
+    this.handleChange = this.handleChange.bind(this);
+  };
+
+  handleChange(e) {
+    // validate
+    this.props.onUserUpdate(this.props.index, this.state.user);
+  }
+
+  renderBasic() {
+    const selectRow = (path, label, options) => {
+      const currentValue = _.get(this.state.user, path, '');
+      const selectOptions = options.map((v, i) => {
+        return e('option', {key: i, value: i+1}, v);
+      });
+      return e(
+        'div',
+        {className: 'row form-group'},
+        e('div', {className: 'col-sm-3'}, e('label', {}, label)),
+        e(
+          'div',
+          {className: 'col-sm-3'},
+          e(
+            'select',
+            {
+              value: currentValue || 0,
+              onChange: (e) => {
+                let newUser = _.cloneDeep(this.state.user);
+                newUser[path] = parseInt(e.target.value);
+                this.setState({user: newUser});
+              },
+              className: 'form-control col-sm-3',
+              //style: {display: 'inline-block'}
+            },
+            selectOptions
+          )
+        ),
+      );
+    };
+
+    const textRow = (path, label, isPassword = false) => {
+      const value = _.get(this.state.user, path, '');
+      return e(
+        'div',
+        {className: 'row form-group'},
+        e('div', {className: 'col-sm-3'}, e('label', {}, label)),
+        e(
+          'div',
+          {className: 'col-sm-3'},
+          e('input',
+            {
+              type: isPassword ? 'password' : 'text',
+              value,
+              className: 'form-control',
+              onChange: (e) => {
+                let newUser = _.cloneDeep(this.state.user);
+                newUser[path] = e.target.value;
+                this.setState({user: newUser});
+              },
+            },
+          )
+        ),
+      );
+    };
+
+    return e(
+      'div',
+      {className: 'panel panel-default'},
+      e('div', {className: 'panel-heading'}, 'Basic Info'),
+      e(
+        'div',
+        {className: 'panel-body'},
+        e(
+          'div',
+          {className: 'container-fluid'},
+          textRow('userName', 'User Name'),
+          textRow('userPwd', 'Password', true),
+          textRow('realName', 'Real Name'),
+          textRow('userAvatar', 'Avatar'),
+          selectRow('userLevel', 'Level', ['Teacher', 'Room Owner', 'Room Admin', 'Member']),
+          selectRow('userStatus', 'userStatus', ['active', 'inactive']),
+        ),
+      )
+    );
+  }
+
+  /*
+  renderRooms() {
+    const checkBoxRow = (path, value, label, isChecked = false) => {
+      return e(
+        'div',
+        {className: 'row form-group'},
+        e('div', {className: 'col-sm-3'}, e('label', {}, label)),
+        e(
+          'div',
+          {className: 'col-sm-3'},
+          e('label',
+            {className: 'checkbox-inline'},
+            e(
+              'input',
+              {
+                type: 'checkbox',
+                value: value,
+                onChange: (e) => {
+                  let newUser = _.cloneDeep(this.state.user);
+                  let newPath = _.cloneDeep(_.get(newUser, path, []));
+                  if (e.target.checked) {
+                    if (newPath.indexOf(value) < 0) {
+                      newPath.add(value);
+                    }
+                  } else {
+                    if (newPath.indexOf(value) >= 0) {
+                      newPath.splice( newPath.indexOf(value), 1 );
+                    }
+                  }
+                  _.set(newUser, path, newPath)
+                  this.setState({user: newUser});
+                },
+                checked: isChecked
+              }
+            ),
+            path
+          )
+        ),
+      );
+    };
+
+    const roomCheckBoxRows = () => {
+      const user = this.state.user;
+      user.rooms && user.rooms.map((v) => {
+        return checkBoxRow('rooms', v, v);
+      })
+    }
+
+    return e(
+      'div',
+      {className: 'panel panel-default'},
+      e('div', {className: 'panel-heading'}, 'Rooms'),
+      e(
+        'div',
+        {className: 'panel-body'},
+        e(
+          'div',
+          {className: 'container-fluid'},
+          notifyRow('streamChange'),
+          notifyRow('participantActivities'),
+        ),
+      )
+    );
+  } */
+
+  render() {
+    return e(
+      'div',
+      {
+        className: 'modal-dialog modal-lg',
+        role: 'document'
+      },
+      e(
+        'div',
+        {className: 'modal-content'},
+        e(
+          'div',
+          {className: 'modal-header'},
+          e(
+            'button',
+            {
+              type: 'button',
+              className: 'close',
+              'data-dismiss': 'modal',
+              'aria-label': 'Close'
+            },
+            e('span', {'aria-hidden': true}, 'x')
+          ),
+          e('h4', {className: 'modal-title'}, 'User: ' + this.state.user._id)
+        ),
+        e(
+          'div',
+          {className: 'modal-body'},
+          this.renderBasic(),
+        ),
+        e(
+          'div',
+          {className: 'modal-footer'},
+          e(
+            'button',
+            {
+              type: 'button',
+              className: 'btn btn-primary',
+              'data-dismiss': 'modal',
+              onClick: this.handleChange
+            },
+            e('i', {className: 'glyphicon glyphicon-ok'})
+          ),
+          e(
+            'button',
+            {
+              type: 'button',
+              className: 'btn btn-default',
+              'data-dismiss': 'modal'
+            },
+            e('i', {className: 'glyphicon glyphicon-remove'})
+          )
+        )
+      )
+    );
+  }
+}
+
 class UserApp extends React.Component {
   constructor(props) {
     super(props);
@@ -1282,15 +1496,8 @@ class UserApp extends React.Component {
     this.modalId = this.props.modalId || 'UserModal';
     this.userCount = this.props.count;
     this.fetchData = this.fetchData.bind(this);
-    this.renderEditable = this.renderEditable.bind(this);
     this.renderOperation = this.renderOperation.bind(this);
     this.handleUserUpdate = this.handleUserUpdate.bind(this);
-  }
-
-  handleUserUpdate(index, update) {
-    const data = [...this.state.data];
-    data[index] = Object.assign(data[index], update);
-    this.setState({ data });
   }
 
   fetchData(state, instance) {
@@ -1310,29 +1517,30 @@ class UserApp extends React.Component {
     });
   }
 
-  renderEditable(cellInfo) {
-    return e(
-      'div',
-      {
-        style: { backgroundColor: '#fafafa' },
-        contentEditable: true,
-        suppressContentEditableWarning: true,
-        onBlur: e => {
-          const data = [...this.state.data];
-          const originColumn = data[cellInfo.index][cellInfo.column.id];
-          if (typeof originColumn === 'number') {
-            data[cellInfo.index][cellInfo.column.id] = parseInt(e.target.innerHTML);
-          }
-          if (typeof originColumn === 'string') {
-            data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-          }
-          this.setState({ data });
-        },
-        dangerouslySetInnerHTML: {
-          __html: this.state.data[cellInfo.index][cellInfo.column.id]
-        }
+  handleUserUpdate(index, update) {
+    if (index >= 0) { // update
+      const opUser = this.state.data[index];
+      // remove userPwd if not changed.
+      if (update.hasOwnProperty("userPwd") && update.userPwd === opUser.userPwd) {
+        delete update.userPwd;
       }
-    );
+      restApi.updateUser(opUser._id, update, (err, resp) => {
+        if (err) {
+          return notify('error', 'Update User', resp);
+        }
+        notify('info', 'Update User Success', opUser._id);
+        this.fetchData(this.pagination);
+      });
+    } else { // create
+      restApi.createUser(update, (err, resp) => {
+        if (err) {
+          return notify('error', 'Add new User', resp);
+        }
+        let createdUser = JSON.parse(resp);
+        notify('info', 'Add User Success', createdUser._id);
+        this.fetchData(this.pagination);
+      });
+    }
   }
 
   renderOperation(cellInfo) {
@@ -1352,7 +1560,7 @@ class UserApp extends React.Component {
             ReactDOM.unmountComponentAtNode(domModal);
             ReactDOM.render(
               e(
-                RoomModal,
+                UserModal,
                 {
                   data: opUser,
                   index: cellInfo.index,
@@ -1364,23 +1572,6 @@ class UserApp extends React.Component {
           }
         },
         'Detail'
-      ),
-      e(
-        'button',
-        {
-          className: 'btn btn-sm btn-success',
-          style: { marginRight: '5px' },
-          onClick: ()=>{
-            restApi.updateUSer(opUser._id, opUser, (err, resp) => {
-              if (err) {
-                return notify('error', 'Update Room', resp);
-              }
-              notify('info', 'Update Room Success', opUser._id);
-              this.fetchData(this.pagination);
-            });
-          }
-        },
-        'Add'
       ),
       e(
         'button',
@@ -1402,6 +1593,43 @@ class UserApp extends React.Component {
     );
   }
 
+  renderCreator() {
+    return e(
+      'div',
+      {className: 'input-group form-group', style:{width: '50%'}},
+      e(
+        'span',
+        {className: 'input-group-btn'},
+        e(
+          'button',
+          {
+            type: 'button',
+            className: 'btn btn-sm btn-success',
+            style: { marginRight: '5px' },
+            'data-toggle': 'modal',
+            'data-target': '#' + this.modalId,
+            onClick: ()=>{
+              const domModal = document.querySelector('#' + this.modalId);
+              ReactDOM.unmountComponentAtNode(domModal);
+              ReactDOM.render(
+                e(
+                  UserModal,
+                  {
+                    data: {},
+                    index: -1,
+                    onUserUpdate: this.handleUserUpdate
+                  }
+                ),
+                domModal
+              );
+            }
+          },
+          'Add New User'
+        )
+      )
+    );
+  }
+
   render() {
     const { data, pages, loading } = this.state;
     const columns = [
@@ -1411,33 +1639,23 @@ class UserApp extends React.Component {
       },
       {
         Header: 'User Name',
-        accessor: 'userName',
-        Cell: this.renderEditable
+        accessor: 'userName'
       },
       {
         Header: 'Real Name',
-        accessor: 'realName',
-        Cell: this.renderEditable
-      },
-      {
-        Header: 'Avatar',
-        accessor: 'userAvatar',
-        Cell: this.renderEditable
+        accessor: 'realName'
       },
       {
         Header: 'Level',
-        accessor: 'userLevel',
-        Cell: this.renderEditable
+        accessor: 'userLevel'
       },
       {
         Header: 'Logged In',
-        accessor: 'loggedin',
-        Cell: this.renderEditable
+        accessor: 'loggedin'
       },
       {
         Header: 'Status',
-        accessor: 'userStatus',
-        Cell: this.renderEditable
+        accessor: 'userStatus'
       },
       {
         Header: '',
@@ -1450,6 +1668,7 @@ class UserApp extends React.Component {
 
     return e('div', {},
       e('h1', {className: 'page-header'}, 'Users in current Service'),
+      this.renderCreator(),
       e(
         ReactTable,
         {
