@@ -152,13 +152,13 @@ app.post('/v1/rooms/:room/tokens', tokensResource.create);
 // /////////////////////////////////////////////////////////////////////////////////////////
 
 //User management
-app.post('/users', usersResource.createUser);
-app.get('/users', usersResource.represent);
-app.get('/users/:user', userResource.represent);
-app.delete('/users/:user', userResource.deleteUser);
-app.put('/users/:user', userResource.updateUser);
-app.post('/users/login', userResource.login);
-app.delete('/users/logout/:user', userResource.logout);
+app.post('/v1/users', usersResource.createUser);
+app.get('/v1/users', usersResource.represent);
+app.get('/v1/users/:user', userResource.represent);
+app.delete('/v1/users/:user', userResource.deleteUser);
+app.put('/v1/users/:user', userResource.updateUser);
+app.post('/v1/users/login', userResource.login);
+app.delete('/v1/users/logout/:user', userResource.logout);
 
 // for path not match
 app.use('*', function(req, res, next) {

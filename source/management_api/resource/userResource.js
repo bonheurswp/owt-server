@@ -56,7 +56,7 @@ exports.represent = function (req, res, next) {
 exports.deleteUser = function (req, res, next) {
     dataAccess.user.get(req.params.user, function (err, user) {
         if (!user) {
-            log.info('USer ', req.params.user, ' does not exist');
+            log.info('User ', req.params.user, ' does not exist');
             next(new e.NotFoundError('User not found'));
         } else {
             dataAccess.user.delete(req.params.user, function(err, user) {
@@ -100,30 +100,28 @@ exports.updateUser = function (req, res, next) {
  * Login User. 
  */
 exports.login = function (req, res, next) {
-    var userId = req.body.user;
+    var userName = req.body.user;
     var userPwd = req.body.pwd;
-    dataAccess.user.get(userId, function (err, user) {
+    log.debug('login by user', userName, userPwd);
+    dataAccess.user.findUserByNameAndPwd(userName, userPwd, function (err, user) {
         if (err) {
+            log.debug('find user by error ', err);
             return next(err);
         }
+        log.debug('find user ', user);
         if (!user) {
-            next(new e.NotFoundError('User not found'));
-        } else if (user.loggedin) {
-            next(new e.AppError('User has already logged in'), 400);
-        } else {
-            dataAccess.user.validatePwd(userPwd, user.userPwd, function(ret) {
-                if (!ret) {
-                    next(new e.AppError('User and password are not matched'), 400); 
+            next(new e.NotFoundError('user not found'));
+        /* } else if (user.loggedin) {
+            next(new e.AppError('user has already logged in'), 400); */
+        } else {           
+            dataAccess.user.update(user._id, { loggedin : true }, function(err, result) {
+                log.debug('update user ', result);
+                if (result) {
+                    res.send(result);
                 } else {
-                    dataAccess.user.update(UserId, { loggedin : true }, function(err, result) {
-                        if (result) {
-                            res.send(result);
-                        } else {
-                            next(new e.AppError('User login failed'), 400);
-                        }
-                    });
+                    next(new e.AppError('User login failed'), 400);
                 }
-            });
+            });               
         }
     });
 }

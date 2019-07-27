@@ -72,6 +72,15 @@ exports.get = function (userId, callback) {
 };
 
 /*
+ * Get a user by user name and password
+ */
+exports.findUserByNameAndPwd = function (name, password, callback) {
+  User.findOne({userName: name}).lean().exec(function (err, user) {   //TODO need to add password validate
+    callback(err, user);
+  });
+};
+
+/*
  * Validate a user's pwd
  */
 exports.validatePwd = function (decryptedPwd, encryptedPwd, callback) {

@@ -112,9 +112,11 @@ var generateToken = function (currentRoom, authData, origin, callback) {
         token.host += ':' + ec.port;
 
         dataAccess.token.create(token, function(id) {
+            log.debug('token id created in DB' + id);
+            log.debug('token obejct created in DB' + JSON.stringify(token));
             getTokenString(id, token)
                 .then((tokenS) => {
-                    log.debug('token created successfully' + tokenS);
+                    log.debug('token created successfully ' + tokenS);
                     callback(tokenS);
                 });
         });

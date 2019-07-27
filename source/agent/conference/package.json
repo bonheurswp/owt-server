@@ -7,7 +7,8 @@
     "node-getopt": "*",
     "toml": "*",
     "mongoose": "^4.13.6",
-    "fraction.js": "^4.0.12"
+    "fraction.js": "^4.0.12",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "mocha": "^6.0.2",
