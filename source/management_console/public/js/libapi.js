@@ -195,24 +195,24 @@ ManagementApi.prototype.deleteService = function (serviceId, callback) {
 };
 
 ManagementApi.prototype.createUser = function (user, callback) {
-    this.send('POST', user, 'users', callback);
+    this.send('POST', user, 'v1/users', callback);
 };
 
 ManagementApi.prototype.getUsers = function (page, per_page, callback) {
-    this.send('GET', undefined, 'users?page=' + page + '&per_page=' + per_page, callback);
+    this.send('GET', undefined, 'v1/users?page=' + page + '&per_page=' + per_page, callback);
 };
 
 ManagementApi.prototype.getUser= function (userId, callback) {
     userId = userId || null;
-    this.send('GET', undefined, 'users/' + userId, callback);
+    this.send('GET', undefined, 'v1/users/' + userId, callback);
 };
 
 ManagementApi.prototype.deleteUser = function (userId, callback) {
     userId = userId || null;
-    this.send('DELETE', undefined, 'users/' + userId, callback);
+    this.send('DELETE', undefined, 'v1/users/' + userId, callback);
 };
 
 ManagementApi.prototype.updateUser = function (userId, updates, callback) {
     userId = userId || null;
-    this.send('PUT', (updates || {}), 'users/' + userId, callback);
+    this.send('PUT', (updates || {}), 'v1/users/' + userId, callback);
 };
